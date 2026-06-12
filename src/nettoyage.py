@@ -33,3 +33,4 @@
 # Poids           →  Nombre réel valide, entre 1 et 300
 # Taille          →  Nombre entier valide, entre 50 et 250
 # Doublons        →  Supprimer toutes les répétitions
+
