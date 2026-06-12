@@ -34,3 +34,103 @@
 # Taille          →  Nombre entier valide, entre 50 et 250
 # Doublons        →  Supprimer toutes les répétitions
 
+import re
+
+
+def nettoyer_noms_prenoms(patient):
+    """
+    Nettoie les champs 'nom' et 'prenom' du dictionnaire patient.
+    """
+    try:
+        nom = patient["nom"].replace("\xa0", " ").strip()
+        patient["nom"] = nom.title() if nom != "" else ""
+
+        prenom = patient["prenom"].replace("\xa0", " ").strip()
+        patient["prenom"] = prenom.title() if prenom != "" else ""
+
+        return patient
+
+    except Exception as e:
+        print(f"Erreur lors du nettoyage du nom/prénom (patient {patient.get('id', '?')}) : {e}")
+        return patient
+
+
+def nettoyer_telephones(patient):
+    """
+    Nettoie le champ 'telephone' du dictionnaire patient.
+    """
+    try:
+        tel = patient["telephone"].strip().replace(" ", "").replace("-", "")
+
+        if tel.startswith("+221"):
+            tel = tel[4:]
+        elif tel.startswith("00221"):
+            tel = tel[5:]
+
+        patient["telephone"] = tel if re.fullmatch(r"7\d{8}", tel) else ""
+
+        return patient
+
+    except Exception as e:
+        print(f"Erreur lors du nettoyage du téléphone (patient {patient.get('id', '?')}) : {e}")
+        return patient
+
+
+def nettoyer_villes(patient):
+    """
+    Nettoie le champ 'ville' du dictionnaire patient :
+    - enlève les espaces inutiles (y compris invisibles)
+    - met en format titre
+    - corrige les fautes de frappe / orthographe connues
+    """
+    try:
+        ville = patient["ville"].replace("\xa0", " ").strip()
+
+        if ville == "":
+            patient["ville"] = ""
+            return patient
+
+        ville = ville.title()
+
+        corrections = {
+            "Dakar": "Dakar",
+            "Dakarr": "Dakar",
+            "Dakkar": "Dakar",
+            "Kaolak": "Kaolack",
+            "Kaolack": "Kaolack",
+            "Ziguinchor": "Ziguinchor",
+            "Ziguincor": "Ziguinchor",
+            "Ziginchor": "Ziguinchor",
+            "Tambacounda": "Tambacounda",
+            "Tamba": "Tambacounda",
+            "Thies": "Thies",
+            "Thiès": "Thies",
+            "Thiess": "Thies",
+            "Diourbel": "Diourbel",
+            "Diorbel": "Diourbel",
+            "Louga": "Louga",
+            "Lougar": "Louga",
+            "Saint-Louis": "Saint-Louis",
+            "Saint Louis": "Saint-Louis",
+            "Saint Louise": "Saint-Louis",
+            "Saint-Louise": "Saint-Louis",
+        }
+
+        patient["ville"] = corrections.get(ville, ville)
+        return patient
+
+    except Exception as e:
+        print(f"Erreur lors du nettoyage de la ville (patient {patient.get('id', '?')}) : {e}")
+        return patient
+
+def nettoyer_tous_les_patients(patients):
+    """
+    Parcourt la liste de patients une seule fois et applique
+    les trois nettoyages (nom/prenom, telephone, ville) sur chacun.
+    """
+    for patient in patients:
+        nettoyer_noms_prenoms(patient)
+        nettoyer_telephones(patient)
+        nettoyer_villes(patient)
+
+    return patients
