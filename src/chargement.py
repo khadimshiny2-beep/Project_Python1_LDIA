@@ -28,3 +28,39 @@ def charger_donnees(chemin_fichier):
         print(f"Erreur inattendue lors du chargement : {e}")
 
     return lignes
+
+def creation_dictionnaire_patients(lignes_brutes):
+    """
+    Parse toutes les lignes brutes en dictionnaires patients,
+    et nettoie immédiatement nom/prenom.
+    Ignore les lignes mal formées (mauvais nombre de champs).
+    """
+    patients = []
+    lignes_invalides = 0
+
+    for ligne in lignes_brutes:
+        champs = ligne.split(";")
+
+        if len(champs) != 9:
+            lignes_invalides += 1
+            print(f"Ligne ignorée (format invalide) : {ligne}")
+            continue
+
+        patient = {
+            "id": champs[0],
+            "nom": champs[1],
+            "prenom":champs[2],
+            "age": champs[3],
+            "telephone": champs[4],
+            "ville": champs[5],
+            "groupe_sanguin": champs[6],
+            "poids": champs[7],
+            "taille": champs[8],
+        }
+
+        patients.append(patient)
+
+    print(f"Lignes parsées avec succès : {len(patients)}")
+    print(f"Lignes invalides ignorées : {lignes_invalides}")
+
+    return patients, lignes_invalides
