@@ -25,13 +25,13 @@
 # —Quasi-doublons : même patient avec légère différence (espace en fin de nom)
 
 # 3. Règles de nettoyage à respecter
-# Nom / Prénom    →  Format titre 
-# —première lettre majuscule  (Diallo)
-# Téléphone →  9 chiffres sans espaces, commence par 7
-# Ville     →  Orthographe standardisée, format titre
-# Groupe sanguin  →  Valeurs strictement autorisées uniquement
-# Poids           →  Nombre réel valide, entre 1 et 300
-# Taille          →  Nombre entier valide, entre 50 et 250
+#
+# 
+# 
+# 
+# 
+
+#
 # Doublons        →  Supprimer toutes les répétitions
 
 import re
@@ -113,24 +113,77 @@ def nettoyer_villes(patient):
             "Saint-Louis": "Saint-Louis",
             "Saint Louis": "Saint-Louis",
             "Saint Louise": "Saint-Louis",
-            "Saint-Louise": "Saint-Louis",
+            "Saint-Louise": "Saint-Louis"
         }
-
         patient["ville"] = corrections.get(ville, ville)
         return patient
-
     except Exception as e:
         print(f"Erreur lors du nettoyage de la ville (patient {patient.get('id', '?')}) : {e}")
         return patient
 
+def nettoyer_groupes_sanguins(patients):
+    """
+    Parcourt tous les patients et rejette ceux avec un groupe invalide.
+    Retourne deux listes : valides et rejetés.
+    """
+    groupes_valides=['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+    valides = []
+    rejetes = []
+
+    for patient in patients:
+        try:
+            if patient["groupe_sanguin"] in groupes_valides:
+                valides.append(patient)
+            else:
+                print(f"Patient {patient.get('id', '?')} rejeté — groupe invalide : '{patient.get('groupe_sanguin', '?')}'")
+                rejetes.append(patient)
+        except Exception as e:
+            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
+            rejetes.append(patient)
+
+    return patients, valides, rejetes
+
+def nettoyer_poids(patients):
+    """
+    Parcourt tous les patients et rejette ceux avec un poip invads invalide.
+    Retourne deux listes : valides et rejetés.
+    """
+    valides = []
+    rejetes = []
+    for patient in patients:
+        try:
+            if 1 <= patient["poids"] <= 300 :
+                valides.append(patient)
+            else:
+                print(f"Patient {patient.get('id', '?')} rejeté — poids invalide : '{patient.get('poids', '?')}'")
+                rejetes.append(patient)
+        except Exception as e:
+            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
+            rejetes.append(patient)
+    return patients, valides, rejetes
+
+def nettoyer_taille(patients):
+    """
+    Parcourt tous les patients et rejette ceux avec un poip invads invalide.
+    Retourne deux listes : valides et rejetés.
+    """
+    valides = []
+    rejetes = []
+    for patient in patients:
+        try:
+            if 50 <= patient["taille"] <= 250 :
+                valides.append(patient)
+            else:
+                print(f"Patient {patient.get('id', '?')} rejeté — taille invalide : '{patient.get('taille', '?')}'")
+                rejetes.append(patient)
+        except Exception as e:
+            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
+    return patients, valides, rejetes
+
+
 def nettoyer_tous_les_patients(patients):
-    """
-    Parcourt la liste de patients une seule fois et applique
-    les trois nettoyages (nom/prenom, telephone, ville) sur chacun.
-    """
     for patient in patients:
         nettoyer_noms_prenoms(patient)
         nettoyer_telephones(patient)
         nettoyer_villes(patient)
-
     return patients
