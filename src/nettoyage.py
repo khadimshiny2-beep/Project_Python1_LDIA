@@ -32,7 +32,7 @@
 # 
 
 #
-# Doublons        →  Supprimer toutes les répétitions
+#
 
 import re
 
