@@ -180,10 +180,37 @@ def nettoyer_taille(patients):
             print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
     return patients, valides, rejetes
 
+def nettoyer_doublons(patients):
+    """
+    Supprime les doublons exacts et quasi-doublons de la liste de patients,
+    en se basant sur nom, prenom, telephone (les champs déjà nettoyés).
+    """
+    patients_uniques = []
+    cles_vues = set()
+    nb_doublons = 0
+
+    for patient in patients:
+        cle = (patient["nom"], patient["prenom"], patient["telephone"])
+
+        if cle in cles_vues:
+            nb_doublons += 1
+            print(f"Doublon détecté et supprimé : patient id={patient['id']}")
+            continue
+
+        cles_vues.add(cle)
+        patients_uniques.append(patient)
+
+    print(f"Nombre de doublons supprimés : {nb_doublons}")
+    return patients_uniques, nb_doublons
+
 
 def nettoyer_tous_les_patients(patients):
     for patient in patients:
         nettoyer_noms_prenoms(patient)
         nettoyer_telephones(patient)
         nettoyer_villes(patient)
-    return patients
+        nettoyer_groupes_sanguins(patients)
+        nettoyer_poids(patients)
+        nettoyer_taille(patients)
+        nettoyer_doublons(patients)
+    return patients 
