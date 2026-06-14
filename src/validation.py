@@ -1,3 +1,4 @@
+# CAHIER DE CHARGES POUR LA VALIDATION DES DONNÉES DES PATIENTS
 # ---> Gestion des erreurs avec try/except
 # 2. Liste complète des erreurs présentes dans le fichier
 # -Noms et prénoms—Espaces inutiles en début et fin :  " Ndiaye "  →  "Ndiaye"
@@ -25,6 +26,7 @@
 # —Taille impossible : inférieure à 50 ou supérieure à 250
 # —Doublons exacts : même ligne répétée
 # —Quasi-doublons : même patient avec légère différence (espace en fin de nom)
+
 def valider_age(patient):
     """
     Vérifie que l'âge est un entier valide compris entre 0 et 120.
@@ -117,7 +119,7 @@ def valider_taille(patient):
 def valider_nom_prenom(patient):
     """
     Vérifie que nom et prenom ne sont pas vides.
-    À appeler APRÈS le nettoyage (nom/prenom déjà strippés).
+    À appeler apres le nettoyage (nom/prenom déjà strippés).
     """
     try:
         return patient["nom"] != "" and patient["prenom"] != ""
@@ -128,7 +130,7 @@ def valider_nom_prenom(patient):
 def valider_telephone(patient):
     """
     Vérifie que le téléphone est valide (non vide après nettoyage).
-    À appeler APRÈS nettoyer_telephones (qui met "" si invalide).
+    À appeler apres nettoyer_telephones (qui met "" si invalide).
     """
     try:
         return patient["telephone"] != ""
@@ -160,3 +162,25 @@ def patient_est_valide(patient):
         return False, "taille invalide ou manquante"
 
     return True, ""
+
+
+def filtrer_patients_valides(patients):
+    """
+    Sépare la liste en patients valides et rejetés.
+    Retourne (patients_valides, patients_rejetes, raisons_rejet)
+    """
+    patients_valides = []
+    patients_rejetes = []
+    raisons_rejet = []
+
+    for patient in patients:
+        est_valide, raison = patient_est_valide(patient)
+
+        if est_valide:
+            patients_valides.append(patient)
+        else:
+            patients_rejetes.append(patient)
+            raisons_rejet.append((patient.get("id", "?"), raison))
+            print(f"Patient id={patient.get('id', '?')} rejeté : {raison}")
+
+    return patients_valides, patients_rejetes, raisons_rejet

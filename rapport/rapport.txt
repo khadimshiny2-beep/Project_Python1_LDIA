@@ -1,0 +1,95 @@
+==================================================
+RAPPORT DE NETTOYAGE - DONNEES PATIENTS
+==================================================
+Date de génération : 14/06/2026 16:17:13
+
+--- RESUME GLOBAL ---
+Nombre total de lignes lues (fichier brut) : N/A
+Nombre de patients valides                  : 185
+Nombre de doublons supprimés                : N/A
+Nombre de lignes rejetées                   : N/A
+
+==================================================
+LISTE DETAILLEE DES ERREURS DETECTEES
+==================================================
+  - Patient id=id : téléphone invalide
+  - Patient id=6 : taille invalide ou manquante
+  - Patient id=10 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=15 : poids invalide ou manquant
+  - Patient id=16 : groupe sanguin invalide ou non reconnu
+  - Patient id=24 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=25 : groupe sanguin invalide ou non reconnu
+  - Patient id=32 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=41 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=42 : groupe sanguin invalide ou non reconnu
+  - Patient id=43 : poids invalide ou manquant
+  - Patient id=47 : poids invalide ou manquant
+  - Patient id=48 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=50 : groupe sanguin invalide ou non reconnu
+  - Patient id=55 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=58 : taille invalide ou manquante
+  - Patient id=61 : groupe sanguin invalide ou non reconnu
+  - Patient id=62 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=63 : groupe sanguin invalide ou non reconnu
+  - Patient id=65 : groupe sanguin invalide ou non reconnu
+  - Patient id=68 : groupe sanguin invalide ou non reconnu
+  - Patient id=70 : poids invalide ou manquant
+  - Patient id=72 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=76 : taille invalide ou manquante
+  - Patient id=82 : groupe sanguin invalide ou non reconnu
+  - Patient id=86 : taille invalide ou manquante
+  - Patient id=87 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=93 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=95 : groupe sanguin invalide ou non reconnu
+  - Patient id=96 : groupe sanguin invalide ou non reconnu
+  - Patient id=104 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=110 : groupe sanguin invalide ou non reconnu
+  - Patient id=112 : poids invalide ou manquant
+  - Patient id=116 : taille invalide ou manquante
+  - Patient id=118 : groupe sanguin invalide ou non reconnu
+  - Patient id=121 : groupe sanguin invalide ou non reconnu
+  - Patient id=133 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=141 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=144 : poids invalide ou manquant
+  - Patient id=145 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=147 : groupe sanguin invalide ou non reconnu
+  - Patient id=149 : groupe sanguin invalide ou non reconnu
+  - Patient id=156 : groupe sanguin invalide ou non reconnu
+  - Patient id=158 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=171 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=172 : taille invalide ou manquante
+  - Patient id=182 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=184 : groupe sanguin invalide ou non reconnu
+  - Patient id=192 : poids invalide ou manquant
+  - Patient id=197 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=201 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=204 : groupe sanguin invalide ou non reconnu
+  - Patient id=207 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=216 : poids invalide ou manquant
+  - Patient id=217 : taille invalide ou manquante
+  - Patient id=221 : groupe sanguin invalide ou non reconnu
+  - Patient id=222 : groupe sanguin invalide ou non reconnu
+  - Patient id=229 : groupe sanguin invalide ou non reconnu
+  - Patient id=232 : poids invalide ou manquant
+  - Patient id=234 : groupe sanguin invalide ou non reconnu
+  - Patient id=239 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=249 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=252 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=255 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=258 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=261 : groupe sanguin invalide ou non reconnu
+  - Patient id=274 : groupe sanguin invalide ou non reconnu
+  - Patient id=275 : groupe sanguin invalide ou non reconnu
+  - Patient id=281 : poids invalide ou manquant
+  - Patient id=292 : âge invalide (manquant, négatif ou > 120)
+  - Patient id=297 : taille invalide ou manquante
+
+==================================================
+STATISTIQUES FINALES
+==================================================
+Moyenne des âges (patients valides)  : N/A
+Moyenne des poids (patients valides)  : N/A
+Ville la plus fréquente                : N/A (0 patients)
+
+Répartition des groupes sanguins :
+  Aucune donnée disponible.

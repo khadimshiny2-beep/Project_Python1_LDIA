@@ -31,7 +31,7 @@ def charger_donnees(chemin_fichier):
 
 def creation_dictionnaire_patients(lignes_brutes):
     """
-    Parse toutes les lignes brutes en dictionnaires patients,
+    Convertit toutes les lignes brutes en dictionnaires patients,
     et nettoie immédiatement nom/prenom.
     Ignore les lignes mal formées (mauvais nombre de champs).
     """
