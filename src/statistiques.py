@@ -1,3 +1,4 @@
+# --->  calculs et statistiques apres nettoyage et validation 
 from collections import Counter
 
 
@@ -150,3 +151,19 @@ def afficher_statistiques(stats):
 
     except Exception as e:
         print(f"Erreur lors de l'affichage des statistiques : {e}")
+
+def calculer_statistiques(patients_valides):
+    try:
+        stats_brutes = analyser_fichier_patients(patients=patients_valides)
+
+        return {
+            "nb_valides"         : stats_brutes.get("nb_valides", 0),
+            "moyenne_age"        : stats_brutes.get("age_moyen", 0),
+            "moyenne_poids"      : stats_brutes.get("poids_moyen", 0),
+            "ville_freq"         : stats_brutes.get("ville_top", "N/A"),
+            "repartition_groupes": stats_brutes.get("groupes_sanguins", {}),
+        }
+
+    except Exception as e:
+        print(f"Erreur dans calculer_statistiques : {e}")
+        return {}

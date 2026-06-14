@@ -1,3 +1,4 @@
+# CAHIER DE CHARGES POUR LA VALIDATION DES DONNÉES DES PATIENTS
 # ---> Gestion des erreurs avec try/except
 # 2. Liste complète des erreurs présentes dans le fichier
 # -Noms et prénoms—Espaces inutiles en début et fin :  " Ndiaye "  →  "Ndiaye"
@@ -25,3 +26,161 @@
 # —Taille impossible : inférieure à 50 ou supérieure à 250
 # —Doublons exacts : même ligne répétée
 # —Quasi-doublons : même patient avec légère différence (espace en fin de nom)
+
+def valider_age(patient):
+    """
+    Vérifie que l'âge est un entier valide compris entre 0 et 120.
+    Met à jour patient['age'] en entier si valide, sinon le marque invalide.
+    Retourne True si valide, False sinon.
+    """
+    try:
+        age_str = patient["age"].strip()
+
+        if age_str == "":
+            return False
+
+        age = int(age_str)
+
+        if age < 0 or age > 120:
+            return False
+
+        if age == 0:
+            print(f"Patient id={patient['id']} : âge égal à 0 (suspect, mais accepté)")
+
+        patient["age"] = age
+        return True
+
+    except (ValueError, KeyError):
+        return False
+
+
+def valider_groupe_sanguin(patient):
+    """
+    Vérifie que le groupe sanguin appartient à la liste autorisée.
+    Retourne True si valide, False sinon.
+    """
+    groupes_valides = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"}
+
+    try:
+        groupe = patient["groupe_sanguin"].strip()
+        return groupe in groupes_valides
+    except (KeyError, AttributeError):
+        return False
+
+
+def valider_poids(patient):
+    """
+    Vérifie que le poids est un nombre réel valide entre 1 et 300.
+    Met à jour patient['poids'] en float si valide.
+    Retourne True si valide, False sinon.
+    """
+    try:
+        poids_str = patient["poids"].strip()
+
+        if poids_str == "" or poids_str.upper() == "N/A":
+            return False
+
+        poids = float(poids_str)
+
+        if poids < 1 or poids > 300:
+            return False
+
+        patient["poids"] = poids
+        return True
+
+    except (ValueError, KeyError):
+        return False
+
+
+def valider_taille(patient):
+    """
+    Vérifie que la taille est un entier valide entre 50 et 250.
+    Met à jour patient['taille'] en int si valide.
+    Retourne True si valide, False sinon.
+    """
+    try:
+        taille_str = patient["taille"].strip()
+
+        if taille_str == "" or taille_str.upper() == "N/A":
+            return False
+
+        taille = int(float(taille_str))  # gère le cas "175.0" si jamais
+
+        if taille < 50 or taille > 250:
+            return False
+
+        patient["taille"] = taille
+        return True
+
+    except (ValueError, KeyError):
+        return False
+
+
+def valider_nom_prenom(patient):
+    """
+    Vérifie que nom et prenom ne sont pas vides.
+    À appeler apres le nettoyage (nom/prenom déjà strippés).
+    """
+    try:
+        return patient["nom"] != "" and patient["prenom"] != ""
+    except KeyError:
+        return False
+
+
+def valider_telephone(patient):
+    """
+    Vérifie que le téléphone est valide (non vide après nettoyage).
+    À appeler apres nettoyer_telephones (qui met "" si invalide).
+    """
+    try:
+        return patient["telephone"] != ""
+    except KeyError:
+        return False
+
+
+def patient_est_valide(patient):
+    """
+    Vérifie toutes les conditions de validité d'un patient.
+    Retourne (True, "") si valide, ou (False, raison) sinon.
+    """
+    if not valider_nom_prenom(patient):
+        return False, "nom ou prénom manquant"
+
+    if not valider_telephone(patient):
+        return False, "téléphone invalide"
+
+    if not valider_age(patient):
+        return False, "âge invalide (manquant, négatif ou > 120)"
+
+    if not valider_groupe_sanguin(patient):
+        return False, "groupe sanguin invalide ou non reconnu"
+
+    if not valider_poids(patient):
+        return False, "poids invalide ou manquant"
+
+    if not valider_taille(patient):
+        return False, "taille invalide ou manquante"
+
+    return True, ""
+
+
+def filtrer_patients_valides(patients):
+    """
+    Sépare la liste en patients valides et rejetés.
+    Retourne (patients_valides, patients_rejetes, raisons_rejet)
+    """
+    patients_valides = []
+    patients_rejetes = []
+    raisons_rejet = []
+
+    for patient in patients:
+        est_valide, raison = patient_est_valide(patient)
+
+        if est_valide:
+            patients_valides.append(patient)
+        else:
+            patients_rejetes.append(patient)
+            raisons_rejet.append((patient.get("id", "?"), raison))
+            print(f"Patient id={patient.get('id', '?')} rejeté : {raison}")
+
+    return patients_valides, patients_rejetes, raisons_rejet

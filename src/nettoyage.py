@@ -121,96 +121,14 @@ def nettoyer_villes(patient):
         print(f"Erreur lors du nettoyage de la ville (patient {patient.get('id', '?')}) : {e}")
         return patient
 
-def nettoyer_groupes_sanguins(patients):
-    """
-    Parcourt tous les patients et rejette ceux avec un groupe invalide.
-    Retourne deux listes : valides et rejetés.
-    """
-    groupes_valides=['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-    valides = []
-    rejetes = []
-
-    for patient in patients:
-        try:
-            if patient["groupe_sanguin"] in groupes_valides:
-                valides.append(patient)
-            else:
-                print(f"Patient {patient.get('id', '?')} rejeté — groupe invalide : '{patient.get('groupe_sanguin', '?')}'")
-                rejetes.append(patient)
-        except Exception as e:
-            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
-            rejetes.append(patient)
-
-    return patients, valides, rejetes
-
-def nettoyer_poids(patients):
-    """
-    Parcourt tous les patients et rejette ceux avec un poip invads invalide.
-    Retourne deux listes : valides et rejetés.
-    """
-    valides = []
-    rejetes = []
-    for patient in patients:
-        try:
-            if 1 <= patient["poids"] <= 300 :
-                valides.append(patient)
-            else:
-                print(f"Patient {patient.get('id', '?')} rejeté — poids invalide : '{patient.get('poids', '?')}'")
-                rejetes.append(patient)
-        except Exception as e:
-            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
-            rejetes.append(patient)
-    return patients, valides, rejetes
-
-def nettoyer_taille(patients):
-    """
-    Parcourt tous les patients et rejette ceux avec un poip invads invalide.
-    Retourne deux listes : valides et rejetés.
-    """
-    valides = []
-    rejetes = []
-    for patient in patients:
-        try:
-            if 50 <= patient["taille"] <= 250 :
-                valides.append(patient)
-            else:
-                print(f"Patient {patient.get('id', '?')} rejeté — taille invalide : '{patient.get('taille', '?')}'")
-                rejetes.append(patient)
-        except Exception as e:
-            print(f"Erreur (patient {patient.get('id', '?')}) : {e}")
-    return patients, valides, rejetes
-
-def nettoyer_doublons(patients):
-    """
-    Supprime les doublons exacts et quasi-doublons de la liste de patients,
-    en se basant sur nom, prenom, telephone (les champs déjà nettoyés).
-    """
-    patients_uniques = []
-    cles_vues = set()
-    nb_doublons = 0
-
-    for patient in patients:
-        cle = (patient["nom"], patient["prenom"], patient["telephone"])
-
-        if cle in cles_vues:
-            nb_doublons += 1
-            print(f"Doublon détecté et supprimé : patient id={patient['id']}")
-            continue
-
-        cles_vues.add(cle)
-        patients_uniques.append(patient)
-
-    print(f"Nombre de doublons supprimés : {nb_doublons}")
-    return patients_uniques, nb_doublons
-
-
 def nettoyer_tous_les_patients(patients):
+    """
+    Parcourt la liste de patients une seule fois et applique
+    les trois nettoyages (nom/prenom, telephone, ville) sur chacun.
+    """
     for patient in patients:
         nettoyer_noms_prenoms(patient)
         nettoyer_telephones(patient)
         nettoyer_villes(patient)
-        nettoyer_groupes_sanguins(patients)
-        nettoyer_poids(patients)
-        nettoyer_taille(patients)
-        nettoyer_doublons(patients)
-    return patients 
+
+    return patients
