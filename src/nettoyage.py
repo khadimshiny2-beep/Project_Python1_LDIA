@@ -25,14 +25,14 @@
 # —Quasi-doublons : même patient avec légère différence (espace en fin de nom)
 
 # 3. Règles de nettoyage à respecter
-# Nom / Prénom    →  Format titre 
-# —première lettre majuscule  (Diallo)
-# Téléphone →  9 chiffres sans espaces, commence par 7
-# Ville     →  Orthographe standardisée, format titre
-# Groupe sanguin  →  Valeurs strictement autorisées uniquement
-# Poids           →  Nombre réel valide, entre 1 et 300
-# Taille          →  Nombre entier valide, entre 50 et 250
-# Doublons        →  Supprimer toutes les répétitions
+#
+# 
+# 
+# 
+# 
+
+#
+#
 
 import re
 
@@ -113,39 +113,13 @@ def nettoyer_villes(patient):
             "Saint-Louis": "Saint-Louis",
             "Saint Louis": "Saint-Louis",
             "Saint Louise": "Saint-Louis",
-            "Saint-Louise": "Saint-Louis",
+            "Saint-Louise": "Saint-Louis"
         }
-
         patient["ville"] = corrections.get(ville, ville)
         return patient
-
     except Exception as e:
         print(f"Erreur lors du nettoyage de la ville (patient {patient.get('id', '?')}) : {e}")
         return patient
-
-def nettoyer_doublons(patients):
-    """
-    Supprime les doublons exacts et quasi-doublons de la liste de patients,
-    en se basant sur nom, prenom, telephone (les champs déjà nettoyés).
-    """
-    patients_uniques = []
-    cles_vues = set()
-    nb_doublons = 0
-
-    for patient in patients:
-        cle = (patient["nom"], patient["prenom"], patient["telephone"])
-
-        if cle in cles_vues:
-            nb_doublons += 1
-            print(f"Doublon détecté et supprimé : patient id={patient['id']}")
-            continue
-
-        cles_vues.add(cle)
-        patients_uniques.append(patient)
-
-    print(f"Nombre de doublons supprimés : {nb_doublons}")
-    return patients_uniques, nb_doublons
-
 
 def nettoyer_tous_les_patients(patients):
     """
@@ -156,6 +130,5 @@ def nettoyer_tous_les_patients(patients):
         nettoyer_noms_prenoms(patient)
         nettoyer_telephones(patient)
         nettoyer_villes(patient)
-
 
     return patients
