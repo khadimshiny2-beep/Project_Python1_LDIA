@@ -1,140 +1,53 @@
-# CAHIER DE CHARGES POUR LA VALIDATION DES DONNÉES DES PATIENTS
-# ---> Gestion des erreurs avec try/except
-# 2. Liste complète des erreurs présentes dans le fichier
-# -Noms et prénoms—Espaces inutiles en début et fin :  " Ndiaye "  →  "Ndiaye"
-# —Noms entièrement en minuscules :  "fall"  →  "Fall"
-# —Noms entièrement en majuscules :  "DIALLO"  →  "Diallo"
-# —Espaces invisibles en fin de chaîne (subtil, difficile à détecter)
-# -Âges—Valeur manquante (champ vide)
-# —Âge négatif :  -5
-# - Âge irréaliste : supérieur à 120
-# —Âge égal à zéro :  0(à signaler comme suspect)
-# Téléphones—Espaces dans le numéro :  "77 123 45 67"  →  "771234567"
-# —Tirets dans le numéro :  "78-222-33-44"  →  "782223344"
-# —Préfixe international  00221→ à supprimer
-# —Préfixe international  +221→ à supprimer
-# —Numéro avec tous les chiffres identiques :  770000000(suspect)
-# Villes—Espaces inutiles :  "Dakar "  →  "Dakar"
-# —Fautes de frappe :  "dakarr"  →  "Dakar"
-# —Majuscules incorrectes :  "THIES"  →  "Thies"
-# —Orthographe incohérente :  "Saint louis"  →  "Saint-Louis"
-# Groupes sanguins
-# —Seuls les groupes valides sont acceptés :  A+, A-, B+, B-, AB+, AB-, O+, O-
-# —Tout autre groupe est invalide et entraîne le rejet du patientPoids et taille
-# —Valeur non numérique :  "abc"—Valeur manquante : champ vide ou  "N/A"
-# —Poids impossible : inférieur à 1 ou supérieur à 300
-# —Taille impossible : inférieure à 50 ou supérieure à 250
-# —Doublons exacts : même ligne répétée
-# —Quasi-doublons : même patient avec légère différence (espace en fin de nom)
+# validation.py
+
+def valider_nom_prenom(patient):
+    try:
+        return patient.get("nom", "").strip() != "" and patient.get("prenom", "").strip() != ""
+    except Exception:
+        return False
+
+
+def valider_telephone(patient):
+    # Le numéro doit faire exactement 9 chiffres et commencer par un 7 suite au nettoyage
+    tel = patient.get("telephone", "").strip()
+    return len(tel) == 9 and tel.startswith("7") and tel.isdigit()
+
 
 def valider_age(patient):
-    """
-    Vérifie que l'âge est un entier valide compris entre 0 et 120.
-    Met à jour patient['age'] en entier si valide, sinon le marque invalide.
-    Retourne True si valide, False sinon.
-    """
     try:
-        age_str = patient["age"].strip()
-
-        if age_str == "":
+        age_str = str(patient.get("age", "")).strip()
+        if age_str == "" or age_str.upper() == "N/A":
             return False
-
         age = int(age_str)
-
-        if age < 0 or age > 120:
-            return False
-
-        if age == 0:
-            print(f"Patient id={patient['id']} : âge égal à 0 (suspect, mais accepté)")
-
-        patient["age"] = age
-        return True
-
+        return 0 <= age <= 120
     except (ValueError, KeyError):
         return False
 
 
 def valider_groupe_sanguin(patient):
-    """
-    Vérifie que le groupe sanguin appartient à la liste autorisée.
-    Retourne True si valide, False sinon.
-    """
     groupes_valides = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"}
-
-    try:
-        groupe = patient["groupe_sanguin"].strip()
-        return groupe in groupes_valides
-    except (KeyError, AttributeError):
-        return False
+    return patient.get("groupe_sanguin", "").strip().upper() in groupes_valides
 
 
 def valider_poids(patient):
-    """
-    Vérifie que le poids est un nombre réel valide entre 1 et 300.
-    Met à jour patient['poids'] en float si valide.
-    Retourne True si valide, False sinon.
-    """
     try:
-        poids_str = patient["poids"].strip()
-
+        poids_str = str(patient.get("poids", "")).strip()
         if poids_str == "" or poids_str.upper() == "N/A":
             return False
-
         poids = float(poids_str)
-
-        if poids < 1 or poids > 300:
-            return False
-
-        patient["poids"] = poids
-        return True
-
+        return 1 <= poids <= 300
     except (ValueError, KeyError):
         return False
 
 
 def valider_taille(patient):
-    """
-    Vérifie que la taille est un entier valide entre 50 et 250.
-    Met à jour patient['taille'] en int si valide.
-    Retourne True si valide, False sinon.
-    """
     try:
-        taille_str = patient["taille"].strip()
-
+        taille_str = str(patient.get("taille", "")).strip()
         if taille_str == "" or taille_str.upper() == "N/A":
             return False
-
-        taille = int(float(taille_str))  # gère le cas "175.0" si jamais
-
-        if taille < 50 or taille > 250:
-            return False
-
-        patient["taille"] = taille
-        return True
-
+        taille = int(float(taille_str))
+        return 50 <= taille <= 250
     except (ValueError, KeyError):
-        return False
-
-
-def valider_nom_prenom(patient):
-    """
-    Vérifie que nom et prenom ne sont pas vides.
-    À appeler apres le nettoyage (nom/prenom déjà strippés).
-    """
-    try:
-        return patient["nom"] != "" and patient["prenom"] != ""
-    except KeyError:
-        return False
-
-
-def valider_telephone(patient):
-    """
-    Vérifie que le téléphone est valide (non vide après nettoyage).
-    À appeler apres nettoyer_telephones (qui met "" si invalide).
-    """
-    try:
-        return patient["telephone"] != ""
-    except KeyError:
         return False
 
 
@@ -177,10 +90,11 @@ def filtrer_patients_valides(patients):
         est_valide, raison = patient_est_valide(patient)
 
         if est_valide:
+            # Copie locale ou conversion finale optionnelle pour l'exportation interne si besoin
+            # Mais on préserve la structure de dictionnaire d'origine attendue par main.py
             patients_valides.append(patient)
         else:
             patients_rejetes.append(patient)
             raisons_rejet.append((patient.get("id", "?"), raison))
-            print(f"Patient id={patient.get('id', '?')} rejeté : {raison}")
 
     return patients_valides, patients_rejetes, raisons_rejet

@@ -1,169 +1,116 @@
-# --->  calculs et statistiques apres nettoyage et validation 
-from collections import Counter
-
+# statistiques.py
+# Aucun import de collections ici !
 
 def analyser_fichier_patients(patients, nb_total_brut=0, nb_doublons=0, nb_rejetes=0):
     """
-    Calcule les statistiques sur la liste de patients valides.
-
-    Paramètres :
-        patients      : liste de dicts (patients valides, déjà nettoyés)
-        nb_total_brut : int, nombre de lignes dans le fichier brut
-        nb_doublons   : int, nombre de doublons supprimés
-        nb_rejetes    : int, nombre de patients rejetés
-
-    Retourne :
-        dict de statistiques, ou None en cas d'erreur critique
+    Calcule les statistiques sur la liste de patients valides en Python pur.
     """
     try:
         stats = {}
 
-        # 1. Nombre total de patients dans le fichier brut
+        # 1. Comptes généraux
         stats["nb_total_brut"] = nb_total_brut
-
-        # 2. Nombre de patients valides après nettoyage
         stats["nb_valides"] = len(patients)
-
-        # 3. Nombre de doublons supprimés
         stats["nb_doublons"] = nb_doublons
-
-        # 4. Nombre de lignes rejetées
         stats["nb_rejetes"] = nb_rejetes
 
-        # 5. Moyenne des âges des patients valides
-        try:
-            ages = [p["age"] for p in patients if isinstance(p["age"], int)]
-            stats["age_moyen"] = round(sum(ages) / len(ages), 1) if ages else "N/A"
-        except Exception as e:
-            print(f"Erreur lors du calcul de la moyenne des âges : {e}")
-            stats["age_moyen"] = "N/A"
+        # 2. Moyenne des âges
+        ages = []
+        for p in patients:
+            try:
+                ages.append(int(str(p["age"]).strip()))
+            except (ValueError, KeyError):
+                pass
+        stats["age_moyen"] = round(sum(ages) / len(ages), 1) if ages else "N/A"
 
-        # 6. Moyenne des poids des patients valides
-        try:
-            poids_liste = [p["poids"] for p in patients if isinstance(p.get("poids"), (int, float))]
-            stats["poids_moyen"] = round(sum(poids_liste) / len(poids_liste), 1) if poids_liste else "N/A"
-        except Exception as e:
-            print(f"Erreur lors du calcul de la moyenne des poids : {e}")
-            stats["poids_moyen"] = "N/A"
+        # 3. Moyenne des poids
+        poids_liste = []
+        for p in patients:
+            try:
+                poids_liste.append(float(str(p["poids"]).strip()))
+            except (ValueError, KeyError):
+                pass
+        stats["poids_moyen"] = round(sum(poids_liste), 1) if poids_liste else "N/A"
 
-        # 7. Ville la plus fréquente
-        try:
-            villes = Counter(p["ville"] for p in patients if p.get("ville", "") != "")
-            if villes:
-                ville_top, count_top = villes.most_common(1)[0]
-                stats["ville_top"]       = ville_top
-                stats["ville_top_count"] = count_top
-            else:
-                stats["ville_top"]       = "N/A"
-                stats["ville_top_count"] = 0
-        except Exception as e:
-            print(f"Erreur lors du calcul de la ville la plus fréquente : {e}")
-            stats["ville_top"]       = "N/A"
+        # 4. Ville la plus fréquente (Algorithme avec dictionnaire standard)
+        compteur_villes = {}
+        for p in patients:
+            ville = p.get("ville", "").strip()
+            if ville:
+                # Si la ville existe déjà, on incrémente, sinon on l'initialise à 1
+                compteur_villes[ville] = compteur_villes.get(ville, 0) + 1
+
+        # Recherche du maximum manuellement
+        if compteur_villes:
+            ville_top = None
+            max_contacts = -1
+            for ville, nb in compteur_villes.items():
+                if nb > max_contacts:
+                    max_contacts = nb
+                    ville_top = ville
+            
+            stats["ville_top"] = ville_top
+            stats["ville_top_count"] = max_contacts
+        else:
+            stats["ville_top"] = "N/A"
             stats["ville_top_count"] = 0
 
-        # 8. Répartition des groupes sanguins
-        try:
-            groupes = Counter(p["groupe_sanguin"] for p in patients if p.get("groupe_sanguin", "") != "")
-            ordre_groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
-            stats["groupes_sanguins"] = {g: groupes.get(g, 0) for g in ordre_groupes}
-        except Exception as e:
-            print(f"Erreur lors du calcul des groupes sanguins : {e}")
-            stats["groupes_sanguins"] = {}
+        # 5. Répartition des groupes sanguins (Algorithme avec dictionnaire standard)
+        compteur_groupes = {}
+        for p in patients:
+            groupe = p.get("groupe_sanguin", "").strip().upper()
+            if groupe:
+                compteur_groupes[groupe] = compteur_groupes.get(groupe, 0) + 1
+        
+        stats["groupes_sanguins"] = compteur_groupes
 
         return stats
-
     except Exception as e:
-        print(f"Erreur critique lors de l'analyse des statistiques : {e}")
-        return None
+        print(f"Erreur lors de l'analyse des statistiques : {e}")
+        return {}
 
-
-def afficher_statistiques(stats):
-    """
-    Affiche les statistiques dans le terminal.
-    """
-    try:
-        if stats is None:
-            print("Erreur : aucune statistique à afficher.")
-            return
-
-        ligne = "=" * 46
-
-        print(f"\n{ligne}")
-        print("    STATISTIQUES DES DONNÉES MÉDICALES")
-        print(f"{ligne}")
-
-        # 1. Total brut
-        try:
-            print(f"\n  Patients dans le fichier brut  : {stats['nb_total_brut']}")
-        except KeyError:
-            print("\n  Patients dans le fichier brut  : N/A")
-
-        # 2. Valides
-        try:
-            print(f"  Patients valides               : {stats['nb_valides']}")
-        except KeyError:
-            print("  Patients valides               : N/A")
-
-        # 3. Doublons
-        try:
-            print(f"  Doublons supprimés             : {stats['nb_doublons']}")
-        except KeyError:
-            print("  Doublons supprimés             : N/A")
-
-        # 4. Rejetés
-        try:
-            print(f"  Lignes rejetées                : {stats['nb_rejetes']}")
-        except KeyError:
-            print("  Lignes rejetées                : N/A")
-
-        # 5. Moyenne des âges
-        try:
-            print(f"\n  Moyenne des âges               : {stats['age_moyen']}")
-        except KeyError:
-            print("\n  Moyenne des âges               : N/A")
-
-        # 6. Moyenne des poids
-        try:
-            print(f"  Moyenne des poids (kg)         : {stats['poids_moyen']}")
-        except KeyError:
-            print("  Moyenne des poids (kg)         : N/A")
-
-        # 7. Ville la plus fréquente
-        try:
-            print(f"\n  Ville la plus fréquente        : {stats['ville_top']} ({stats['ville_top_count']} patients)")
-        except KeyError:
-            print("\n  Ville la plus fréquente        : N/A")
-
-        # 8. Répartition groupes sanguins
-        try:
-            print(f"\n{'─' * 46}")
-            print("  RÉPARTITION DES GROUPES SANGUINS")
-            print(f"{'─' * 46}")
-            if stats["groupes_sanguins"]:
-                for groupe, count in stats["groupes_sanguins"].items():
-                    print(f"    {groupe:<5} : {count} patient(s)")
-            else:
-                print("    Aucun groupe sanguin disponible.")
-        except KeyError:
-            print("  Groupes sanguins               : N/A")
-
-        print(f"\n{ligne}\n")
-
-    except Exception as e:
-        print(f"Erreur lors de l'affichage des statistiques : {e}")
 
 def calculer_statistiques(patients_valides):
+    """
+    Fonction principale appelée par le menu Option 4 de main.py
+    """
     try:
         stats_brutes = analyser_fichier_patients(patients=patients_valides)
 
         return {
-            "nb_valides"         : stats_brutes.get("nb_valides", 0),
+            "nb_valides"         : stats_brutes.get("nb_valides", len(patients_valides)),
             "moyenne_age"        : stats_brutes.get("age_moyen", 0),
             "moyenne_poids"      : stats_brutes.get("poids_moyen", 0),
             "ville_freq"         : stats_brutes.get("ville_top", "N/A"),
             "repartition_groupes": stats_brutes.get("groupes_sanguins", {}),
         }
-
     except Exception as e:
         print(f"Erreur dans calculer_statistiques : {e}")
-        return {}
+        return {
+            "nb_valides": len(patients_valides),
+            "moyenne_age": 0,
+            "moyenne_poids": 0,
+            "ville_freq": "N/A",
+            "repartition_groupes": {},
+        }
+
+
+def afficher_statistiques(stats):
+    """
+    Affiche proprement les résultats dans la console
+    """
+    if not stats:
+        print("Aucune statistique à afficher.")
+        return
+
+    ligne = "═" * 50
+    print(f"\n{ligne}\n  RÉSULTATS STATISTIQUES DES PATIENTS VALIDES\n{ligne}")
+    print(f"  Nombre de patients valides     : {stats.get('nb_valides', 0)}")
+    print(f"  Moyenne d'âge                  : {stats.get('moyenne_age', 'N/A')} ans")
+    print(f"  Moyenne de poids               : {stats.get('moyenne_poids', 'N/A')} kg")
+    print(f"  Ville la plus fréquente        : {stats.get('ville_freq', 'N/A')}")
+    print(f"\n  Répartition des groupes sanguins :")
+    
+    for groupe, count in stats.get("repartition_groupes", {}).items():
+        print(f"    {groupe:<5} : {count} patient(s)")
+    print(f"{ligne}\n")

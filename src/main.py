@@ -1,5 +1,5 @@
 from chargement import charger_donnees, obtenir_chemin_donnees, creation_dictionnaire_patients
-from nettoyage import nettoyer_tous_les_patients, nettoyer_doublons
+from nettoyage import nettoyer_tous_les_patients,nettoyer_doublons
 from validation import filtrer_patients_valides
 from export import exporter_csv, exporter_json, exporter_rapport, obtenir_chemin_sortie
 
