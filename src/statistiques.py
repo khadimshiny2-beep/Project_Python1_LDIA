@@ -1,5 +1,5 @@
-# --->  calculs et statistiques apres nettoyage et validation 
-from collections import Counter
+# --->  calculs et statistiques apres nettoyage et validation
+# Modules autorisés uniquement : pas de collections, pas de numpy, pas de pandas
 
 
 def analyser_fichier_patients(patients, nb_total_brut=0, nb_doublons=0, nb_rejetes=0):
@@ -46,13 +46,21 @@ def analyser_fichier_patients(patients, nb_total_brut=0, nb_doublons=0, nb_rejet
             print(f"Erreur lors du calcul de la moyenne des poids : {e}")
             stats["poids_moyen"] = "N/A"
 
-        # 7. Ville la plus fréquente
+        # 7. Ville la plus fréquente (sans Counter : dict manuel)
         try:
-            villes = Counter(p["ville"] for p in patients if p.get("ville", "") != "")
-            if villes:
-                ville_top, count_top = villes.most_common(1)[0]
+            comptage_villes = {}
+            for p in patients:
+                ville = p.get("ville", "")
+                if ville != "":
+                    if ville in comptage_villes:
+                        comptage_villes[ville] += 1
+                    else:
+                        comptage_villes[ville] = 1
+
+            if comptage_villes:
+                ville_top = max(comptage_villes, key=lambda v: comptage_villes[v])
                 stats["ville_top"]       = ville_top
-                stats["ville_top_count"] = count_top
+                stats["ville_top_count"] = comptage_villes[ville_top]
             else:
                 stats["ville_top"]       = "N/A"
                 stats["ville_top_count"] = 0
@@ -61,11 +69,17 @@ def analyser_fichier_patients(patients, nb_total_brut=0, nb_doublons=0, nb_rejet
             stats["ville_top"]       = "N/A"
             stats["ville_top_count"] = 0
 
-        # 8. Répartition des groupes sanguins
+        # 8. Répartition des groupes sanguins (sans Counter : dict manuel)
         try:
-            groupes = Counter(p["groupe_sanguin"] for p in patients if p.get("groupe_sanguin", "") != "")
             ordre_groupes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
-            stats["groupes_sanguins"] = {g: groupes.get(g, 0) for g in ordre_groupes}
+            comptage_groupes = {g: 0 for g in ordre_groupes}
+
+            for p in patients:
+                groupe = p.get("groupe_sanguin", "")
+                if groupe in comptage_groupes:
+                    comptage_groupes[groupe] += 1
+
+            stats["groupes_sanguins"] = comptage_groupes
         except Exception as e:
             print(f"Erreur lors du calcul des groupes sanguins : {e}")
             stats["groupes_sanguins"] = {}
@@ -79,7 +93,7 @@ def analyser_fichier_patients(patients, nb_total_brut=0, nb_doublons=0, nb_rejet
 
 def afficher_statistiques(stats):
     """
-    Affiche les statistiques dans le terminal.
+    Affiche toutes les statistiques demandées dans le terminal.
     """
     try:
         if stats is None:
@@ -118,15 +132,21 @@ def afficher_statistiques(stats):
 
         # 5. Moyenne des âges
         try:
-            print(f"\n  Moyenne des âges               : {stats['age_moyen']}")
+            age_aff = stats['age_moyen']
+            if isinstance(age_aff, (int, float)):
+                age_aff = f"{age_aff:.1f} ans"
+            print(f"\n  Moyenne des âges               : {age_aff}")
         except KeyError:
             print("\n  Moyenne des âges               : N/A")
 
         # 6. Moyenne des poids
         try:
-            print(f"  Moyenne des poids (kg)         : {stats['poids_moyen']}")
+            poids_aff = stats['poids_moyen']
+            if isinstance(poids_aff, (int, float)):
+                poids_aff = f"{poids_aff:.1f} kg"
+            print(f"  Moyenne des poids              : {poids_aff}")
         except KeyError:
-            print("  Moyenne des poids (kg)         : N/A")
+            print("  Moyenne des poids              : N/A")
 
         # 7. Ville la plus fréquente
         try:
@@ -139,8 +159,9 @@ def afficher_statistiques(stats):
             print(f"\n{'─' * 46}")
             print("  RÉPARTITION DES GROUPES SANGUINS")
             print(f"{'─' * 46}")
-            if stats["groupes_sanguins"]:
-                for groupe, count in stats["groupes_sanguins"].items():
+            groupes = stats["groupes_sanguins"]
+            if groupes:
+                for groupe, count in groupes.items():
                     print(f"    {groupe:<5} : {count} patient(s)")
             else:
                 print("    Aucun groupe sanguin disponible.")
@@ -151,6 +172,7 @@ def afficher_statistiques(stats):
 
     except Exception as e:
         print(f"Erreur lors de l'affichage des statistiques : {e}")
+
 
 def calculer_statistiques(patients_valides):
     try:
