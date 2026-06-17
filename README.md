@@ -113,7 +113,8 @@ NOUVELLE SESSION - 15/06/2026 14:15:36
 ## Fonctionnalités bonus implémentées
 
 - Export au format JSON en plus du CSV
-- Correction automatique des villes par distance de Levenshtein
+- Menu coloré
+- Système de journalisation Logs
 
 ## Contraintes techniques respectées
 
